@@ -1,4 +1,4 @@
-const GAS_URL = process.env.GAS_URL || 'https://script.google.com/macros/s/AKfycbw5cPZcyQtAmB6HAYUsmmzyIXzWDQl3N1h-s3oW8PvhtwXw3cFOib3pugqzpkFOggtG7g/exec';
+const GAS_URL = process.env.GAS_URL || 'https://script.google.com/macros/s/AKfycbx50E1kGmyxAR9nq5LV47Npo5No7yCQYunCcgAuVI0h9DHwGtt0Vn0gehU1E4u_ySMpcQ/exec';
 const GAS_PASSWORD = process.env.GAS_PASSWORD || 'nsbe2025';
 
 const MAX_BODY_BYTES = 65536;
