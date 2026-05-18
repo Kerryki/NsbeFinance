@@ -17,7 +17,13 @@ module.exports = async function handler(req, res) {
   try {
     if (req.method === 'GET') {
       const response = await fetch(GAS_URL);
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        return res.status(502).json({ error: 'GAS returned non-JSON', status: response.status, body: text.slice(0, 500) });
+      }
       return res.status(200).json(data);
     }
 
