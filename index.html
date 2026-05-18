@@ -4,103 +4,232 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>NSBE Finance Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
 <link href="https://unpkg.com/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" rel="stylesheet"/>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap');
-  :root { --bg: #ffffff; --bg2: #f9fafb; --bg3: #f3f4f6; --surface: #e5f3f0; --accent: #10b981; --accent2: #059669; --text: #111827; --text2: #4b5563; --text3: #6b7280; --radius: 10px; --font: 'DM Sans', system-ui, sans-serif; --font-mono: 'DM Mono', monospace; }
+  :root {
+    --bg: #ffffff; --bg2: #f9fafb; --bg3: #f3f4f6;
+    --surface: #e5f3f0; --surface2: #d1e7e3;
+    --border: rgba(16,185,129,0.15); --border2: rgba(16,185,129,0.3);
+    --accent: #10b981; --accent2: #059669;
+    --gold: #10b981; --gold2: #059669;
+    --green: #10b981; --red: #dc2626;
+    --text: #111827; --text2: #4b5563; --text3: #6b7280;
+    --radius: 10px; --radius2: 14px;
+    --font: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; }
+
   .app { display: flex; min-height: 100vh; }
-  .sidebar { width: 220px; background: var(--bg2); border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; }
+  .sidebar { width: 220px; background: var(--bg2); border-right: 0.5px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
   .main { flex: 1; overflow-y: auto; }
-  .sidebar-header { padding: 20px; border-bottom: 1px solid #e5e7eb; }
-  .logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
-  .logo span { color: var(--accent); }
-  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 10; }
-  .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
-  .content { padding: 24px 28px; }
+
+  .sidebar-header { padding: 20px 18px 16px; border-bottom: 0.5px solid var(--border); }
+  .logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .logo span { color: var(--gold); }
+  .logo-sub { font-size: 10px; color: var(--text3); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+  .year-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 0.5px solid var(--border2); border-radius: 20px; padding: 4px 10px; font-size: 11px; color: var(--accent2); margin-top: 10px; }
   .nav { padding: 12px 10px; flex: 1; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; cursor: pointer; color: var(--text2); font-size: 13px; transition: all 0.2s; width: 100%; background: none; border: none; text-align: left; font-family: var(--font); }
-  .nav-item:hover { background: var(--bg3); }
-  .nav-item.active { background: rgba(16,185,129,0.15); color: var(--accent); font-weight: 500; }
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; border: 1px solid #e5e7eb; background: transparent; color: var(--text); cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
-  .btn:hover { background: var(--bg3); }
-  .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius); color: var(--text2); font-size: 13px; cursor: pointer; transition: all 0.15s; margin-bottom: 2px; }
+  .nav-item:hover { background: var(--surface); color: var(--text); }
+  .nav-item.active { background: rgba(16,185,129,0.15); color: var(--accent2); font-weight: 500; }
+  .nav-item i { font-size: 16px; }
+  .nav-section { font-size: 10px; color: var(--text3); letter-spacing: 1.2px; text-transform: uppercase; padding: 14px 10px 6px; }
+  .sidebar-footer { padding: 14px 12px; border-top: 0.5px solid var(--border); }
+  .role-pill { display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: var(--radius); padding: 8px 10px; }
+  .role-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .role-label { font-size: 11px; color: var(--text2); }
+  .role-name { font-size: 12px; color: var(--text); font-weight: 500; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 0.5px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+  .topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--border2); background: transparent; color: var(--text); transition: all 0.15s; font-family: var(--font); }
+  .btn:hover { background: var(--surface); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn-primary:hover { background: #059669; }
+  .btn-gold { background: rgba(16,185,129,0.15); border-color: var(--green); color: var(--accent2); }
+  .btn-gold:hover { background: rgba(16,185,129,0.25); }
   .btn-sm { padding: 5px 10px; font-size: 12px; }
-  .card { background: var(--bg2); border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; }
+  .btn-danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.4); color: #dc2626; }
+  .btn-danger:hover { background: rgba(239,68,68,0.2); }
+  .btn-ghost { border-color: transparent; }
+  .btn-ghost:hover { background: var(--surface); border-color: var(--border); }
+
+  .content { padding: 24px 28px; }
+  .section-title { font-size: 13px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; font-weight: 500; }
+
+  .card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius2); padding: 18px 20px; }
+  .card + .card { margin-top: 14px; }
+
   .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
-  .stat-card { background: var(--bg2); border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; }
-  .stat-value { font-family: var(--font-mono); font-size: 22px; font-weight: 600; color: var(--text); }
-  .line-card { background: var(--bg2); border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
-  .modal { background: var(--bg2); border-radius: 10px; padding: 24px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
-  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
-  .form-group { margin-bottom: 14px; }
-  label { display: block; font-size: 11px; color: var(--text3); text-transform: uppercase; margin-bottom: 6px; }
-  input, select, textarea { width: 100%; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-family: var(--font); font-size: 13px; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
-  #toast { position: fixed; bottom: 20px; right: 20px; background: var(--text); color: white; padding: 12px 16px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; z-index: 1000; }
-  #toast.show { opacity: 1; }
-  .loading { position: fixed; inset: 0; background: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; z-index: 50; }
-  .spinner { width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .empty { text-align: center; padding: 40px; color: var(--text2); }
-  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; background: rgba(16,185,129,0.15); color: #047857; }
+  .stat-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius2); padding: 16px 18px; }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .stat-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.gold { color: var(--gold2); }
+  .stat-value.blue { color: var(--accent2); }
+  .stat-value.red { color: #dc2626; }
+  .stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; }
-  th { text-align: left; font-size: 11px; color: var(--text3); text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid #e5e7eb; }
-  td { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; }
+  th { text-align: left; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; border-bottom: 0.5px solid var(--border); font-weight: 500; }
+  td { padding: 10px 12px; border-bottom: 0.5px solid rgba(16,185,129,0.06); font-size: 13px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  .mono { font-family: 'DM Mono', monospace; font-size: 12px; }
+
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+  .badge-green { background: rgba(16,185,129,0.15); color: #047857; }
+  .badge-red { background: rgba(220,38,38,0.15); color: #991b1b; }
+  .badge-gold { background: rgba(16,185,129,0.15); color: #047857; }
+  .badge-blue { background: rgba(16,185,129,0.15); color: #047857; }
+  .badge-gray { background: rgba(107,114,128,0.1); color: #4b5563; }
+
+  .progress-bar { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+  .fill-green { background: #10b981; }
+  .fill-gold { background: #f59e0b; }
+  .fill-red { background: #dc2626; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius2); padding: 24px; width: 100%; max-width: 480px; max-height: 80vh; overflow-y: auto; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+
+  .form-group { margin-bottom: 14px; }
+  label { display: block; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  input, select, textarea { width: 100%; background: var(--bg3); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 12px; color: var(--text); font-size: 13px; font-family: var(--font); outline: none; transition: border-color 0.15s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  select option { background: var(--bg3); }
+  textarea { resize: vertical; min-height: 70px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+  .filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+  .filter-bar select, .filter-bar input { width: auto; min-width: 140px; }
+  .filter-bar input[type="text"] { flex: 1; min-width: 180px; }
+
+  .line-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius2); padding: 16px 18px; margin-bottom: 12px; }
+  .line-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .line-name { font-size: 14px; font-weight: 500; }
+  .line-code { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .line-amounts { display: flex; gap: 18px; font-size: 12px; color: var(--text2); }
+  .line-amounts span { display: flex; flex-direction: column; }
+  .line-amounts strong { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--text); }
+  .line-actions { display: flex; gap: 6px; }
+
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); }
+  .login-box { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius2); padding: 36px 32px; width: 100%; max-width: 360px; }
+  .login-logo { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+  .login-logo span { color: var(--gold); }
+  .login-sub { font-size: 13px; color: var(--text3); margin-bottom: 28px; }
+
+  .tabs { display: flex; gap: 4px; background: var(--bg3); border-radius: var(--radius); padding: 4px; margin-bottom: 20px; }
+  .tab { flex: 1; text-align: center; padding: 7px; border-radius: 7px; font-size: 12px; cursor: pointer; color: var(--text2); transition: all 0.15s; }
+  .tab.active { background: var(--surface); color: var(--text); font-weight: 500; }
+
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 10px 16px; font-size: 13px; z-index: 200; transform: translateY(80px); opacity: 0; transition: all 0.25s; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  .profit-draw-row { background: rgba(16,185,129,0.06); border-left: 2px solid var(--green); }
+  .profit-draw-row td { color: var(--green); }
+
+  .empty { text-align: center; padding: 48px 20px; color: var(--text3); }
+  .empty i { font-size: 36px; margin-bottom: 12px; display: block; }
+  .empty p { font-size: 13px; }
+
+  .archive-item { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s; }
+  .archive-item:hover { border-color: var(--accent); }
+
+  .divider { height: 0.5px; background: var(--border); margin: 20px 0; }
+
+  .info-box { background: rgba(16,185,129,0.08); border: 0.5px solid rgba(16,185,129,0.2); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--accent2); margin-bottom: 16px; display: flex; gap: 8px; align-items: flex-start; }
+  .info-box i { margin-top: 1px; flex-shrink: 0; }
+
+  .warning-box { background: rgba(251,146,60,0.08); border: 0.5px solid rgba(251,146,60,0.25); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: #f97316; margin-bottom: 16px; display: flex; gap: 8px; align-items: flex-start; }
+
+  .loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; z-index: 999; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--surface2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 </style>
 </head>
 <body>
-
 <div id="root"></div>
-<div id="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-<script type="text/babel">
-const { useState, useEffect, useMemo, useCallback } = React;
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>
+const { useState, useEffect, useCallback, useMemo } = React;
 
 const db = supabase.createClient(
   'https://zptyctzxjnyaxjonbgbp.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwdHljdHp4am55YXhqb25iZ2JwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTExMDMsImV4cCI6MjA5NDYyNzEwM30.-6pCdPHqHKjJBG4x3rpG-b01WdsfBOF_3Vscml_K6gY'
 );
 
-const PAGE_TITLES = { dashboard: 'Dashboard', lines: 'Budget Lines', transactions: 'Transactions', funds: 'Funds' };
+// ── SEED DATA ──────────────────────────────────────────────────────────────────
+const SEED_YEAR_ID = 'y1';
+const SEED_YEAR = { id: SEED_YEAR_ID, label: '2025 – 2026', locked: false };
+const SEED_LINES = [
+  { id: 'l1',  yearId: SEED_YEAR_ID, code: 'Y2526-01', name: 'Profit',               allocated: 4299.96, description: 'Revenue & Sponsorships', isProfit: true  },
+  { id: 'l2',  yearId: SEED_YEAR_ID, code: 'Y2526-02', name: 'Sponsorship',           allocated: 0,       description: '',                          isProfit: false },
+  { id: 'l3',  yearId: SEED_YEAR_ID, code: 'Y2526-03', name: 'Team Bonding',          allocated: 200,     description: '',                          isProfit: false },
+  { id: 'l4',  yearId: SEED_YEAR_ID, code: 'Y2526-04', name: 'Frosh',                 allocated: 100,     description: '',                          isProfit: false },
+  { id: 'l5',  yearId: SEED_YEAR_ID, code: 'Y2526-05', name: 'Fall Lizard Lounge',    allocated: 150,     description: '',                          isProfit: false },
+  { id: 'l6',  yearId: SEED_YEAR_ID, code: 'Y2526-06', name: 'Winter Lizard Lounge',  allocated: 150,     description: '',                          isProfit: false },
+  { id: 'l7',  yearId: SEED_YEAR_ID, code: 'Y2526-07', name: 'Social Events',         allocated: 400,     description: '',                          isProfit: false },
+  { id: 'l8',  yearId: SEED_YEAR_ID, code: 'Y2526-08', name: 'Wine & Cheese',         allocated: 500,     description: '',                          isProfit: false },
+  { id: 'l9',  yearId: SEED_YEAR_ID, code: 'Y2526-09', name: 'Office Supplies',       allocated: 200,     description: '',                          isProfit: false },
+  { id: 'l10', yearId: SEED_YEAR_ID, code: 'Y2526-10', name: 'Team Merch',            allocated: 200,     description: '',                          isProfit: false },
+  { id: 'l11', yearId: SEED_YEAR_ID, code: 'Y2526-11', name: 'Academics',             allocated: 400,     description: '',                          isProfit: false },
+  { id: 'l12', yearId: SEED_YEAR_ID, code: 'Y2526-12', name: 'Black Legacy Dinner',   allocated: 1000,    description: '',                          isProfit: false },
+  { id: 'l13', yearId: SEED_YEAR_ID, code: 'Y2526-13', name: 'Kickstart Mentorship',  allocated: 400,     description: '',                          isProfit: false },
+  { id: 'l14', yearId: SEED_YEAR_ID, code: 'Y2526-14', name: 'Conferences',           allocated: 1000,    description: '',                          isProfit: false },
+  { id: 'l15', yearId: SEED_YEAR_ID, code: 'Y2526-15', name: 'Walk for Education',    allocated: 200,     description: '',                          isProfit: false },
+];
+const SEED_TRANSACTIONS = [
+  { id: 'tx1',  yearId: SEED_YEAR_ID, lineId: 'l1',  date: '2025-04-01', amount: 0,      name: '—',  description: 'Balance Forward',              fromProfit: false },
+  { id: 'tx2',  yearId: SEED_YEAR_ID, lineId: 'l7',  date: '2025-08-23', amount: 126.47, name: 'Kerly',   description: 'Stickers',                     fromProfit: false },
+  { id: 'tx3',  yearId: SEED_YEAR_ID, lineId: 'l3',  date: '2025-09-20', amount: 50.02,  name: 'Eileen',  description: 'Chalet Gas',                   fromProfit: false },
+  { id: 'tx4',  yearId: SEED_YEAR_ID, lineId: 'l1',  date: '2025-10-13', amount: 150,    name: '—',  description: 'Photoshoot',                   fromProfit: true  },
+  { id: 'tx5',  yearId: SEED_YEAR_ID, lineId: 'l14', date: '2025-10-19', amount: 549.81, name: 'Eileen',  description: 'NSBE Toronto AirBnB',          fromProfit: false },
+  { id: 'tx6',  yearId: SEED_YEAR_ID, lineId: 'l14', date: '2025-10-19', amount: 60,     name: 'Eileen',  description: 'Transport to Fall Conference',  fromProfit: false },
+  { id: 'tx7',  yearId: SEED_YEAR_ID, lineId: 'l11', date: '2025-10-20', amount: 100.84, name: 'Winnie',  description: 'Cookies and Cram',             fromProfit: false },
+  { id: 'tx8',  yearId: SEED_YEAR_ID, lineId: 'l5',  date: '2025-10-27', amount: 17.65,  name: 'Tya',     description: 'Non-Alcoholic Drinks',         fromProfit: false },
+  { id: 'tx9',  yearId: SEED_YEAR_ID, lineId: 'l1',  date: '2025-10-29', amount: 62.75,  name: 'Tya',     description: 'Vodka and Rhum',               fromProfit: true  },
+  { id: 'tx10', yearId: SEED_YEAR_ID, lineId: 'l5',  date: '2025-10-29', amount: 125.70, name: 'Tya',     description: 'Beers',                        fromProfit: false },
+  { id: 'tx11', yearId: SEED_YEAR_ID, lineId: 'l14', date: '2025-10-29', amount: 60,     name: 'Kerry',   description: 'Megabus Tickets',              fromProfit: false },
+  { id: 'tx12', yearId: SEED_YEAR_ID, lineId: 'l14', date: '2025-11-03', amount: 60,     name: 'Tya',     description: 'Megabus Tickets',              fromProfit: false },
+  { id: 'tx13', yearId: SEED_YEAR_ID, lineId: 'l14', date: '2025-11-03', amount: 60,     name: 'Noemie',  description: 'Megabus Tickets',              fromProfit: false },
+  { id: 'tx14', yearId: SEED_YEAR_ID, lineId: 'l15', date: '2025-11-07', amount: 33.07,  name: 'Kerry',   description: 'Transport',                    fromProfit: false },
+  { id: 'tx15', yearId: SEED_YEAR_ID, lineId: 'l15', date: '2025-11-07', amount: 133.40, name: 'Winnie',  description: 'Transportation Cost',          fromProfit: false },
+  { id: 'tx16', yearId: SEED_YEAR_ID, lineId: 'l3',  date: '2025-11-09', amount: 41.95,  name: 'Kerry',   description: 'Gas for Chalet',               fromProfit: false },
+  { id: 'tx17', yearId: SEED_YEAR_ID, lineId: 'l14', date: '2025-11-15', amount: 46.93,  name: '—',  description: 'Uber Toronto Conference',      fromProfit: false },
+  { id: 'tx18', yearId: SEED_YEAR_ID, lineId: 'l9',  date: '2026-01-27', amount: 200,    name: 'Kerly',   description: 'IKEA Couch',                   fromProfit: false },
+  { id: 'tx19', yearId: SEED_YEAR_ID, lineId: 'l1',  date: '2026-01-27', amount: 63.29,  name: 'Kerly',   description: 'IKEA Couch',                   fromProfit: true  },
+  { id: 'tx20', yearId: SEED_YEAR_ID, lineId: 'l7',  date: '2026-01-27', amount: 92.27,  name: '—',  description: 'GameNight',                    fromProfit: false },
+  { id: 'tx21', yearId: SEED_YEAR_ID, lineId: 'l12', date: '2026-02-05', amount: 366,    name: '—',  description: 'Dishware Rental',              fromProfit: false },
+  { id: 'tx22', yearId: SEED_YEAR_ID, lineId: 'l12', date: '2026-02-05', amount: 310,    name: '—',  description: 'Deco BLD',                     fromProfit: false },
+  { id: 'tx23', yearId: SEED_YEAR_ID, lineId: 'l12', date: '2026-02-15', amount: 200,    name: '—',  description: 'Dessert for BLD',              fromProfit: false },
+  { id: 'tx24', yearId: SEED_YEAR_ID, lineId: 'l12', date: '2026-01-27', amount: 103,    name: 'Tya',     description: 'Dollarama supplies',           fromProfit: false },
+  { id: 'tx25', yearId: SEED_YEAR_ID, lineId: 'l1',  date: '2026-01-27', amount: 700,    name: '—',  description: 'East Canada',                  fromProfit: true  },
+  { id: 'tx26', yearId: SEED_YEAR_ID, lineId: 'l1',  date: '2026-01-27', amount: 1000,   name: 'DEAN',    description: 'Conference Sponsorship',        fromProfit: true  },
+  { id: 'tx27', yearId: SEED_YEAR_ID, lineId: 'l1',  date: '2026-01-27', amount: 190,    name: 'CSCE',    description: 'Lizard Lounge Revenue',        fromProfit: true  },
+];
 
-async function dbGet() {
-  const [y, l, t, f] = await Promise.all([
-    db.from('years').select('*'),
-    db.from('lines').select('*'),
-    db.from('transactions').select('*'),
-    db.from('funds').select('*'),
-  ]);
-  if (y.error) throw new Error(y.error.message);
-  return { years: y.data, lines: l.data, transactions: t.data, funds: f.data };
+// ── UTILS ──────────────────────────────────────────────────────────────────────
+function fmt(n) {
+  return '$' + parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
-
-async function dbCreate(table, data) {
-  const { error } = await db.from(table).insert(data);
-  if (error) throw new Error(error.message);
-}
-
-async function dbUpdate(table, id, data) {
-  const { error } = await db.from(table).update(data).eq('id', id);
-  if (error) throw new Error(error.message);
-}
-
-async function dbDelete(table, id) {
-  const { error } = await db.from(table).delete().eq('id', id);
-  if (error) throw new Error(error.message);
-}
-
-function fmt(n) { return '$' + parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 
 function showToast(msg) {
   const el = document.getElementById('toast');
@@ -109,90 +238,956 @@ function showToast(msg) {
   setTimeout(() => el.classList.remove('show'), 2600);
 }
 
+function downloadCSV(filename, rows) {
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── APP ────────────────────────────────────────────────────────────────────────
 function App() {
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null);
   const [page, setPage] = useState('dashboard');
   const [modal, setModal] = useState(null);
+  const [filter, setFilter] = useState({ line: 'all', search: '' });
+  const [archiveYear, setArchiveYear] = useState(null);
+
+  useEffect(() => { loadData(); }, []);
 
   const activeYear = useMemo(() => store?.years?.find(y => y.id === store.activeYearId) ?? null, [store]);
-  const totalAllocated = useMemo(() => (activeYear?.lines || []).filter(l => !l.isProfit).reduce((s,l) => s + Number(l.allocated||0), 0), [activeYear]);
-  const totalSpent = useMemo(() => (activeYear?.transactions || []).filter(t => !t.fromProfit).reduce((s,t) => s + Number(t.amount||0), 0), [activeYear]);
+  const isAdmin = role === 'admin';
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const totalAllocated = useMemo(() =>
+    (activeYear?.lines || []).filter(l => !l.isProfit).reduce((s, l) => s + Number(l.allocated || 0), 0),
+    [activeYear]);
+
+  const totalSpent = useMemo(() =>
+    (activeYear?.transactions || []).filter(t => !t.fromProfit).reduce((s, t) => s + Number(t.amount || 0), 0),
+    [activeYear]);
+
+  const totalProfit = useMemo(() => {
+    const base = (activeYear?.lines || []).filter(l => l.isProfit).reduce((s, l) => s + Number(l.allocated || 0), 0);
+    const fundIncome = (activeYear?.funds || []).filter(f => f.status === 'approved' && f.allocateTo === 'profit').reduce((s, f) => s + Number(f.received || 0), 0);
+    const draws = (activeYear?.transactions || []).filter(t => t.fromProfit).reduce((s, t) => s + Number(t.amount || 0), 0);
+    return base + fundIncome - draws;
+  }, [activeYear]);
+
+  const totalLineSpent = useCallback((lineId) =>
+    (activeYear?.transactions || []).filter(t => String(t.lineId) === String(lineId) && !t.fromProfit).reduce((s, t) => s + Number(t.amount || 0), 0),
+    [activeYear]);
+
+  const lineById = useCallback((id) =>
+    (activeYear?.lines || []).find(l => String(l.id) === String(id)),
+    [activeYear]);
+
+  const filteredTx = useMemo(() => {
+    let txs = activeYear?.transactions || [];
+    if (filter.line !== 'all') txs = txs.filter(t => String(t.lineId) === String(filter.line));
+    if (filter.search) {
+      const q = filter.search.toLowerCase();
+      txs = txs.filter(t =>
+        (t.name || '').toLowerCase().includes(q) ||
+        (t.description || '').toLowerCase().includes(q) ||
+        (lineById(t.lineId)?.name || '').toLowerCase().includes(q)
+      );
+    }
+    return txs.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [activeYear, filter, lineById]);
 
   async function loadData() {
     try {
       setLoading(true);
-      const data = await dbGet();
-      const lines = data.lines || [];
-      const transactions = data.transactions || [];
-      const funds = data.funds || [];
-      const years = data.years || [];
-      const activeYearId = years[0]?.id || 1;
+      const [y, l, t, f] = await Promise.all([
+        db.from('years').select('*'),
+        db.from('lines').select('*'),
+        db.from('transactions').select('*'),
+        db.from('funds').select('*'),
+      ]);
+      if (y.error) throw new Error(y.error.message);
+
+      const years = y.data || [];
+      if (years.length === 0) {
+        const seedErr = await seedData();
+        if (seedErr) { showToast('Failed to initialize data — check console'); setLoading(false); return; }
+        return loadData();
+      }
+
+      const lines = l.data || [];
+      const transactions = t.data || [];
+      const funds = f.data || [];
+      const savedId = localStorage.getItem('nsbe_activeYearId');
+      const activeYearId = (savedId && years.find(yr => yr.id === savedId)) ? savedId : years[0].id;
 
       setStore({
-        years: years.map(y => ({
-          ...y,
-          lines: lines.filter(l => l.yearId === y.id),
-          transactions: transactions.filter(t => t.yearId === y.id),
-          funds: funds.filter(f => f.yearId === y.id)
+        activeYearId,
+        years: years.map(yr => ({
+          ...yr,
+          lines: lines.filter(li => li.yearId === yr.id),
+          transactions: transactions.filter(tx => tx.yearId === yr.id),
+          funds: funds.filter(fu => fu.yearId === yr.id),
         })),
-        activeYearId
       });
     } catch (err) {
-      console.error('Load error:', err);
-      showToast('Failed to load data. Please try again.');
+      showToast('Failed to load data — check console');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   }
 
-  if (!store || loading) {
-    return React.createElement('div', { className: 'loading' }, React.createElement('div', { className: 'spinner' }));
+  async function seedData() {
+    const { error: e1 } = await db.from('years').insert(SEED_YEAR);
+    const { error: e2 } = await db.from('lines').insert(SEED_LINES);
+    const { error: e3 } = await db.from('transactions').insert(SEED_TRANSACTIONS);
+    return e1 || e2 || e3 || null;
   }
 
+  // ── LINE CRUD ──
+  async function addLine(data) {
+    const newLine = {
+      id: String(Date.now()),
+      yearId: activeYear.id,
+      code: data.code,
+      name: data.name,
+      allocated: parseFloat(data.allocated),
+      description: data.description || '',
+      isProfit: data.isProfit || false,
+    };
+    const { error } = await db.from('lines').insert(newLine);
+    if (error) { showToast('Error saving line'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId ? { ...y, lines: [...y.lines, newLine] } : y),
+    }));
+    showToast('Budget line added');
+  }
+
+  async function editLine(data) {
+    const patch = {
+      code: data.code,
+      name: data.name,
+      allocated: parseFloat(data.allocated),
+      description: data.description || '',
+      isProfit: data.isProfit || false,
+    };
+    const { error } = await db.from('lines').update(patch).eq('id', data.id);
+    if (error) { showToast('Error updating line'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId
+        ? { ...y, lines: y.lines.map(l => l.id === data.id ? { ...l, ...patch } : l) }
+        : y),
+    }));
+    showToast('Line updated');
+  }
+
+  async function deleteLine(id) {
+    const { error: e1 } = await db.from('transactions').delete().eq('lineId', id);
+    const { error: e2 } = await db.from('lines').delete().eq('id', id);
+    if (e1 || e2) { showToast('Error removing line'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId
+        ? { ...y, lines: y.lines.filter(l => l.id !== id), transactions: y.transactions.filter(t => t.lineId !== id) }
+        : y),
+    }));
+    showToast('Line removed');
+  }
+
+  // ── TRANSACTION CRUD ──
+  async function addTransaction(data) {
+    const line = lineById(data.lineId);
+    const spent = totalLineSpent(data.lineId);
+    const allocated = Number(line?.allocated || 0);
+    const amount = Number(data.amount);
+    const over = spent + amount - allocated;
+
+    if (over > 0 && !line?.isProfit) {
+      if (totalProfit < over) {
+        showToast('Not enough in profit pool to cover overage!');
+        return;
+      }
+      const tx1 = { id: String(Date.now()),     yearId: activeYear.id, lineId: data.lineId, date: data.date, amount: parseFloat(data.amount), name: data.name, description: data.description, fromProfit: false };
+      const tx2 = { id: String(Date.now() + 1), yearId: activeYear.id, lineId: data.lineId, date: data.date, amount: over,                   name: data.name, description: `Profit draw for: ${data.description}`, fromProfit: true };
+      const { error: e1 } = await db.from('transactions').insert(tx1);
+      const { error: e2 } = await db.from('transactions').insert(tx2);
+      if (e1 || e2) { showToast('Error recording transaction'); return; }
+      setStore(s => ({
+        ...s,
+        years: s.years.map(y => y.id === s.activeYearId ? { ...y, transactions: [...y.transactions, tx1, tx2] } : y),
+      }));
+      showToast(`Over budget — $${over.toFixed(2)} drawn from profit`);
+      return;
+    }
+
+    const tx = { id: String(Date.now()), yearId: activeYear.id, lineId: data.lineId, date: data.date, amount: parseFloat(data.amount), name: data.name, description: data.description, fromProfit: false };
+    const { error } = await db.from('transactions').insert(tx);
+    if (error) { showToast('Error recording transaction'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId ? { ...y, transactions: [...y.transactions, tx] } : y),
+    }));
+    showToast('Transaction recorded');
+  }
+
+  async function deleteTransaction(id) {
+    const { error } = await db.from('transactions').delete().eq('id', id);
+    if (error) { showToast('Error removing transaction'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId
+        ? { ...y, transactions: y.transactions.filter(t => t.id !== id) }
+        : y),
+    }));
+    showToast('Transaction removed');
+  }
+
+  // ── FUND CRUD ──
+  async function addFund(data) {
+    const fund = {
+      id: String(Date.now()),
+      yearId: activeYear.id,
+      name: data.name,
+      requested: parseFloat(data.requested),
+      received: data.received ? parseFloat(data.received) : null,
+      notes: data.notes || '',
+      allocateTo: data.allocateTo || 'profit',
+      status: 'pending',
+    };
+    const { error } = await db.from('funds').insert(fund);
+    if (error) { showToast('Error saving fund'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId ? { ...y, funds: [...y.funds, fund] } : y),
+    }));
+    showToast('Fund application added');
+  }
+
+  async function updateFund(id, patch) {
+    const { error } = await db.from('funds').update(patch).eq('id', id);
+    if (error) { showToast('Error updating fund'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId
+        ? { ...y, funds: y.funds.map(f => f.id === id ? { ...f, ...patch } : f) }
+        : y),
+    }));
+    showToast('Fund updated');
+  }
+
+  async function deleteFund(id) {
+    const { error } = await db.from('funds').delete().eq('id', id);
+    if (error) { showToast('Error removing fund'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId
+        ? { ...y, funds: y.funds.filter(f => f.id !== id) }
+        : y),
+    }));
+    showToast('Fund removed');
+  }
+
+  // ── NEW YEAR ──
+  async function startNewYear(label) {
+    const base = (activeYear.lines || []).filter(l => l.isProfit).reduce((s, l) => s + Number(l.allocated || 0), 0);
+    const fundIncome = (activeYear.funds || []).filter(f => f.status === 'approved').reduce((s, f) => s + Number(f.received || 0), 0);
+    const draws = (activeYear.transactions || []).filter(t => t.fromProfit).reduce((s, t) => s + Number(t.amount || 0), 0);
+    const profitCarryover = Math.max(0, base + fundIncome - draws);
+
+    const ts = Date.now();
+    const newYearId = 'y' + ts;
+    const newYear = { id: newYearId, label, locked: false };
+    const profitLineId = 'l' + (ts + 1);
+    const profitLine = {
+      id: profitLineId,
+      yearId: newYearId,
+      code: 'NEW-01',
+      name: 'Profit',
+      allocated: profitCarryover,
+      description: 'Revenue & Sponsorships',
+      isProfit: true,
+    };
+
+    const { error: e1 } = await db.from('years').update({ locked: true }).eq('id', activeYear.id);
+    const { error: e2 } = await db.from('years').insert(newYear);
+    const { error: e3 } = await db.from('lines').insert(profitLine);
+    if (e1 || e2 || e3) { showToast('Error starting new year'); return; }
+
+    const newYearFull = { ...newYear, lines: [profitLine], transactions: [], funds: [] };
+    setStore(s => ({
+      activeYearId: newYearId,
+      years: s.years.map(y => y.id === s.activeYearId ? { ...y, locked: true } : y).concat([newYearFull]),
+    }));
+    localStorage.setItem('nsbe_activeYearId', newYearId);
+    showToast(`New year "${label}" started! Profit carried over: ${fmt(profitCarryover)}`);
+  }
+
+  // ── IMPORT LINES ──
+  async function importLines(text) {
+    const textLines = text.trim().split('\n').filter(l => l.trim());
+    const newLines = [];
+    textLines.forEach((line, i) => {
+      const parts = line.split('\t').map(p => p.trim());
+      if (parts.length >= 2) {
+        const code = parts[0] || '';
+        const name = parts[1] || '';
+        const allocated = parseFloat(parts[2] || '0') || 0;
+        if (name && !activeYear.lines.find(l => l.code === code)) {
+          newLines.push({ id: String(Date.now() + i), yearId: activeYear.id, code, name, allocated, description: '', isProfit: false });
+        }
+      }
+    });
+    if (newLines.length === 0) { showToast('No new lines to import'); return; }
+    const { error } = await db.from('lines').insert(newLines);
+    if (error) { showToast('Error importing lines'); return; }
+    setStore(s => ({
+      ...s,
+      years: s.years.map(y => y.id === s.activeYearId ? { ...y, lines: [...y.lines, ...newLines] } : y),
+    }));
+    showToast(`Imported ${newLines.length} budget line(s)`);
+  }
+
+  // ── EXPORT ──
+  function exportTransactions() {
+    const rows = [['Date', 'Code', 'Line Name', 'Person', 'Description', 'Amount', 'Type']];
+    (activeYear?.transactions || []).forEach(t => {
+      const line = lineById(t.lineId);
+      rows.push([t.date, line?.code || '', line?.name || '', t.name, t.description, '$' + Number(t.amount).toFixed(2), t.fromProfit ? 'Profit Draw' : 'Expense']);
+    });
+    downloadCSV(`NSBE_Transactions_${(activeYear?.label || 'export').replace(/\s/g, '_')}.csv`, rows);
+    showToast('Exported transactions');
+  }
+
+  if (loading || !store) {
+    return React.createElement('div', { className: 'loading' },
+      React.createElement('div', { className: 'spinner' })
+    );
+  }
+
+  if (!role) return React.createElement(Login, { onLogin: setRole });
+
   return React.createElement('div', { className: 'app' },
-    React.createElement('div', { className: 'sidebar' },
+    // SIDEBAR
+    React.createElement('aside', { className: 'sidebar' },
       React.createElement('div', { className: 'sidebar-header' },
-        React.createElement('div', { className: 'logo' }, 'NSBE ', React.createElement('span', null, 'Finance')),
-        React.createElement('div', { style: { fontSize: 11, color: 'var(--text3)', marginTop: 4 } }, 'Portal')
+        React.createElement('div', { className: 'logo' }, 'NSBE', React.createElement('span', null, ' ∞')),
+        React.createElement('div', { className: 'logo-sub' }, 'Finance Portal'),
+        React.createElement('div', { className: 'year-badge' },
+          React.createElement('i', { className: 'ti ti-calendar', style: { fontSize: 12 } }),
+          activeYear?.label || ''
+        )
       ),
-      React.createElement('nav', { 'aria-label': 'Main navigation', className: 'nav' },
-        React.createElement('button', { className: `nav-item ${page === 'dashboard' ? 'active' : ''}`, onClick: () => setPage('dashboard'), 'aria-current': page === 'dashboard' ? 'page' : undefined }, React.createElement('i',{className:'ti ti-layout-dashboard', 'aria-hidden': 'true'}), 'Dashboard'),
-        React.createElement('button', { className: `nav-item ${page === 'lines' ? 'active' : ''}`, onClick: () => setPage('lines'), 'aria-current': page === 'lines' ? 'page' : undefined }, React.createElement('i',{className:'ti ti-list-check', 'aria-hidden': 'true'}), 'Budget Lines'),
-        React.createElement('button', { className: `nav-item ${page === 'transactions' ? 'active' : ''}`, onClick: () => setPage('transactions'), 'aria-current': page === 'transactions' ? 'page' : undefined }, React.createElement('i',{className:'ti ti-receipt', 'aria-hidden': 'true'}), 'Transactions'),
-        React.createElement('button', { className: `nav-item ${page === 'funds' ? 'active' : ''}`, onClick: () => setPage('funds'), 'aria-current': page === 'funds' ? 'page' : undefined }, React.createElement('i',{className:'ti ti-file-dollar', 'aria-hidden': 'true'}), 'Funds')
-      )
-    ),
-    React.createElement('div', { className: 'main' },
-      React.createElement('div', { className: 'topbar' },
-        React.createElement('div', { className: 'page-title' }, PAGE_TITLES[page])
+      React.createElement('nav', { className: 'nav' },
+        React.createElement('div', { className: 'nav-section' }, 'Overview'),
+        navItem('dashboard',    'ti-layout-dashboard', 'Dashboard',        page, setPage),
+        navItem('lines',        'ti-list',             'Budget Lines',      page, setPage),
+        navItem('transactions', 'ti-receipt',          'Transactions',      page, setPage),
+        React.createElement('div', { className: 'nav-section' }, 'Funding'),
+        navItem('funds',        'ti-file-dollar',      'Fund Applications', page, setPage),
+        React.createElement('div', { className: 'nav-section' }, 'History'),
+        navItem('archive',      'ti-archive',          'Past Years',        page, setPage),
       ),
-      React.createElement('div', { className: 'content' },
-        page === 'dashboard' && React.createElement('div', null,
-          React.createElement('div', { className: 'stats-grid' },
-            React.createElement('div', { className: 'stat-card' }, React.createElement('div', { style: { fontSize: 11, color: 'var(--text3)' } }, 'ECA Allocated'), React.createElement('div', { className: 'stat-value' }, fmt(totalAllocated))),
-            React.createElement('div', { className: 'stat-card' }, React.createElement('div', { style: { fontSize: 11, color: 'var(--text3)' } }, 'Spent'), React.createElement('div', { className: 'stat-value' }, fmt(totalSpent))),
-            React.createElement('div', { className: 'stat-card' }, React.createElement('div', { style: { fontSize: 11, color: 'var(--text3)' } }, 'Remaining'), React.createElement('div', { className: 'stat-value' }, fmt(totalAllocated - totalSpent)))
-          ),
-          React.createElement('div', { className: 'card' },
-            React.createElement('p', null, 'Finance portal is connected to Supabase.')
+      React.createElement('div', { className: 'sidebar-footer' },
+        React.createElement('div', { className: 'role-pill' },
+          React.createElement('div', { className: 'role-dot' }),
+          React.createElement('div', null,
+            React.createElement('div', { className: 'role-label' }, 'Signed in as'),
+            React.createElement('div', { className: 'role-name' }, isAdmin ? 'VP Finance / President' : 'Public Viewer')
           )
         ),
-        page === 'lines' && React.createElement('div', null, React.createElement('p', null, 'Budget Lines')),
-        page === 'transactions' && React.createElement('div', null, React.createElement('p', null, 'Transactions')),
-        page === 'funds' && React.createElement('div', null, React.createElement('p', null, 'Funds'))
+        isAdmin && React.createElement('button', {
+          className: 'btn btn-ghost btn-sm',
+          style: { width: '100%', marginTop: 8, justifyContent: 'center' },
+          onClick: () => { setRole(null); setPage('dashboard'); }
+        }, React.createElement('i', { className: 'ti ti-logout' }), 'Sign out')
+      )
+    ),
+    // MAIN
+    React.createElement('div', { className: 'main' },
+      page === 'dashboard'    && React.createElement(Dashboard,        { year: activeYear, totalAllocated, totalSpent, totalProfit, isAdmin, onNewYear: () => setModal('newYear'), setPage }),
+      page === 'lines'        && React.createElement(LinesPage,        { year: activeYear, isAdmin, totalLineSpent, addLine, editLine, deleteLine, modal, setM: setModal, onImport: importLines, setPage, setFilter }),
+      page === 'transactions' && React.createElement(TransactionsPage, { year: activeYear, isAdmin, filter, setFilter, filteredTx, lineById, addTransaction, deleteTransaction, modal, setModal, totalLineSpent, onExport: exportTransactions }),
+      page === 'funds'        && React.createElement(FundsPage,        { year: activeYear, isAdmin, addFund, updateFund, deleteFund, addLine, modal, setModal }),
+      page === 'archive'      && React.createElement(ArchivePage,      { store, archiveYear, setArchiveYear, setActiveYear: id => { localStorage.setItem('nsbe_activeYearId', id); setStore(s => ({ ...s, activeYearId: id })); setPage('dashboard'); } }),
+    ),
+    modal === 'newYear' && React.createElement(NewYearModal, { onClose: () => setModal(null), onStart: startNewYear }),
+  );
+}
+
+function navItem(id, icon, label, page, setPage) {
+  return React.createElement('div', { key: id, className: 'nav-item' + (page === id ? ' active' : ''), onClick: () => setPage(id) },
+    React.createElement('i', { className: `ti ${icon}` }), label
+  );
+}
+
+// ── LOGIN ──────────────────────────────────────────────────────────────────────
+function Login({ onLogin }) {
+  const [tab, setTab] = useState('public');
+  const [pw, setPw] = useState('');
+  const [err, setErr] = useState('');
+  const ADMIN_PW = 'nsbe2025';
+
+  function tryLogin() {
+    if (tab === 'public') { onLogin('public'); return; }
+    if (pw === ADMIN_PW) { onLogin('admin'); }
+    else { setErr('Incorrect password'); }
+  }
+
+  return React.createElement('div', { className: 'login-wrap' },
+    React.createElement('div', { className: 'login-box' },
+      React.createElement('div', { className: 'login-logo' }, 'NSBE', React.createElement('span', null, ' ∞')),
+      React.createElement('div', { className: 'login-sub' }, 'Chapter Finance Portal'),
+      React.createElement('div', { className: 'tabs' },
+        React.createElement('div', { className: 'tab' + (tab === 'public' ? ' active' : ''), onClick: () => { setTab('public'); setErr(''); } }, 'View Only'),
+        React.createElement('div', { className: 'tab' + (tab === 'admin'  ? ' active' : ''), onClick: () => { setTab('admin');  setErr(''); } }, 'Admin Access'),
+      ),
+      tab === 'public' && React.createElement('div', { className: 'info-box' },
+        React.createElement('i', { className: 'ti ti-eye' }),
+        'Public access lets you view all finances without making changes.'
+      ),
+      tab === 'admin' && React.createElement('div', { className: 'form-group' },
+        React.createElement('label', null, 'Admin Password'),
+        React.createElement('input', { type: 'password', value: pw, onChange: e => { setPw(e.target.value); setErr(''); }, onKeyDown: e => e.key === 'Enter' && tryLogin(), placeholder: 'Enter password...' }),
+        err && React.createElement('div', { style: { color: '#dc2626', fontSize: 12, marginTop: 6 } }, err)
+      ),
+      tab === 'admin' && React.createElement('div', { style: { fontSize: 11, color: 'var(--text3)', marginBottom: 14 } },
+        '(default password: nsbe2025 — change in code before deploying)'
+      ),
+      React.createElement('button', { className: 'btn btn-primary', style: { width: '100%', justifyContent: 'center' }, onClick: tryLogin },
+        tab === 'public' ? 'View Finances' : 'Sign In'
       )
     )
   );
 }
 
+// ── DASHBOARD ──────────────────────────────────────────────────────────────────
+function Dashboard({ year, totalAllocated, totalSpent, totalProfit, isAdmin, onNewYear, setPage }) {
+  const remaining = totalAllocated - totalSpent;
+  const pct = totalAllocated > 0 ? Math.min(100, (totalSpent / totalAllocated) * 100) : 0;
+  const recentTx = (year?.transactions || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'topbar' },
+      React.createElement('div', { className: 'page-title' }, 'Dashboard'),
+      isAdmin && React.createElement('button', { className: 'btn btn-gold', onClick: onNewYear },
+        React.createElement('i', { className: 'ti ti-calendar-plus' }), 'Start New Year'
+      )
+    ),
+    React.createElement('div', { className: 'content' },
+      React.createElement('div', { className: 'stats-grid' },
+        statCard('ECA Allocated',      fmt(totalAllocated), 'blue',                              'Total from school'),
+        statCard('Total Spent',        fmt(totalSpent),     pct > 90 ? 'red' : 'gold',           `${pct.toFixed(0)}% of budget`),
+        statCard('Remaining (Lines)',  fmt(remaining),      remaining < 0 ? 'red' : 'green',     'Unspent allocation'),
+        statCard('Profit Pool',        fmt(totalProfit),    'green',                             'Sponsors + funds received'),
+      ),
+      React.createElement('div', { className: 'section-title' }, 'Overall budget usage'),
+      React.createElement('div', { className: 'card', style: { marginBottom: 24 } },
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text2)', marginBottom: 8 } },
+          React.createElement('span', null, `$${totalSpent.toFixed(2)} spent`),
+          React.createElement('span', null, `$${totalAllocated.toFixed(2)} allocated`)
+        ),
+        React.createElement('div', { className: 'progress-bar', style: { height: 10 } },
+          React.createElement('div', { className: `progress-fill ${pct > 90 ? 'fill-red' : pct > 70 ? 'fill-gold' : 'fill-green'}`, style: { width: `${pct}%` } })
+        )
+      ),
+      React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 } },
+        React.createElement('div', { className: 'section-title', style: { marginBottom: 0 } }, 'Recent transactions'),
+        React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: () => setPage('transactions') },
+          'View all', React.createElement('i', { className: 'ti ti-arrow-right', style: { fontSize: 12 } })
+        )
+      ),
+      recentTx.length === 0
+        ? React.createElement('div', { className: 'empty' }, React.createElement('i', { className: 'ti ti-receipt-off' }), React.createElement('p', null, 'No transactions yet'))
+        : React.createElement('div', { className: 'card', style: { padding: 0, overflow: 'hidden' } },
+            React.createElement('div', { className: 'table-wrap' },
+              React.createElement('table', null,
+                React.createElement('thead', null, React.createElement('tr', null,
+                  React.createElement('th', null, 'Date'),
+                  React.createElement('th', null, 'Code'),
+                  React.createElement('th', null, 'Line'),
+                  React.createElement('th', null, 'Person'),
+                  React.createElement('th', null, 'Description'),
+                  React.createElement('th', { style: { textAlign: 'right' } }, 'Amount'),
+                )),
+                React.createElement('tbody', null,
+                  recentTx.map(t => {
+                    const line = year?.lines?.find(l => String(l.id) === String(t.lineId));
+                    return React.createElement('tr', { key: t.id, className: t.fromProfit ? 'profit-draw-row' : '' },
+                      React.createElement('td', { className: 'mono' }, t.date),
+                      React.createElement('td', { className: 'mono', style: { fontSize: 11, color: 'var(--text3)' } }, line?.code || '—'),
+                      React.createElement('td', null, t.fromProfit ? React.createElement('span', { className: 'badge badge-gold' }, 'Profit Draw') : (line?.name || '—')),
+                      React.createElement('td', null, t.name),
+                      React.createElement('td', { style: { color: 'var(--text2)' } }, t.description),
+                      React.createElement('td', { style: { textAlign: 'right' } },
+                        React.createElement('span', { className: 'mono', style: { color: t.fromProfit ? 'var(--gold2)' : 'var(--text)' } }, fmt(t.amount))
+                      ),
+                    );
+                  })
+                )
+              )
+            )
+          )
+    )
+  );
+}
+
+function statCard(label, value, color, sub) {
+  return React.createElement('div', { className: 'stat-card', key: label },
+    React.createElement('div', { className: 'stat-label' }, label),
+    React.createElement('div', { className: `stat-value ${color}` }, value),
+    React.createElement('div', { className: 'stat-sub' }, sub)
+  );
+}
+
+// ── LINES PAGE ─────────────────────────────────────────────────────────────────
+function LinesPage({ year, isAdmin, totalLineSpent, addLine, editLine, deleteLine, modal, setM, onImport, setPage, setFilter }) {
+  const [editTarget, setEditTarget] = useState(null);
+  const [importText, setImportText] = useState('');
+  const lines = year?.lines || [];
+
+  const goToTransactions = (lineId) => {
+    setFilter({ line: String(lineId), search: '' });
+    setPage('transactions');
+  };
+
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'topbar' },
+      React.createElement('div', { className: 'page-title' }, 'Budget Lines'),
+      isAdmin && React.createElement('div', { className: 'topbar-actions' },
+        React.createElement('button', { className: 'btn btn-primary', onClick: () => { setEditTarget(null); setM('addLine'); } },
+          React.createElement('i', { className: 'ti ti-plus' }), 'Add Line'
+        ),
+        React.createElement('button', { className: 'btn btn-ghost', onClick: () => setM('import') },
+          React.createElement('i', { className: 'ti ti-download' }), 'Import'
+        ),
+      )
+    ),
+    React.createElement('div', { className: 'content' },
+      lines.length === 0
+        ? React.createElement('div', { className: 'empty' },
+            React.createElement('i', { className: 'ti ti-list-check' }),
+            React.createElement('p', null, isAdmin ? 'No budget lines yet. Add lines from your ECA allocation.' : 'No budget lines have been added yet.')
+          )
+        : lines.map(line => {
+            const spent = totalLineSpent(line.id);
+            const allocated = Number(line.allocated || 0);
+            const pct = allocated > 0 ? Math.min(100, (spent / allocated) * 100) : 0;
+            const over = spent > allocated;
+            return React.createElement('div', { key: line.id, className: 'line-card' },
+              React.createElement('div', { className: 'line-header' },
+                React.createElement('div', null,
+                  React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 } },
+                    React.createElement('div', { className: 'line-code' }, line.code),
+                    React.createElement('div', { className: 'line-name' }, line.name),
+                    line.isProfit && React.createElement('span', { className: 'badge badge-green' }, 'Profit'),
+                  ),
+                  line.description && React.createElement('div', { style: { fontSize: 12, color: 'var(--text3)', marginTop: 3 } }, line.description)
+                ),
+                React.createElement('div', { className: 'line-actions' },
+                  React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: () => goToTransactions(line.id), title: 'View transactions' },
+                    React.createElement('i', { className: 'ti ti-receipt' })
+                  ),
+                  isAdmin && React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: () => { setEditTarget(line); setM('addLine'); } },
+                    React.createElement('i', { className: 'ti ti-edit' })
+                  ),
+                  isAdmin && React.createElement('button', { className: 'btn btn-danger btn-sm', onClick: () => { if (confirm('Remove this line and all its transactions?')) deleteLine(line.id); } },
+                    React.createElement('i', { className: 'ti ti-trash' })
+                  ),
+                )
+              ),
+              React.createElement('div', { className: 'line-amounts' },
+                React.createElement('span', null, React.createElement('span', { style: { fontSize: 11, color: 'var(--text3)' } }, 'Allocated'), React.createElement('strong', null, fmt(allocated))),
+                React.createElement('span', null, React.createElement('span', { style: { fontSize: 11, color: 'var(--text3)' } }, 'Spent'),     React.createElement('strong', { style: { color: over ? '#dc2626' : 'var(--text)' } }, fmt(spent))),
+                React.createElement('span', null, React.createElement('span', { style: { fontSize: 11, color: 'var(--text3)' } }, 'Remaining'), React.createElement('strong', { style: { color: over ? '#dc2626' : allocated - spent > 0 ? 'var(--green)' : 'var(--text)' } }, fmt(allocated - spent))),
+              ),
+              React.createElement('div', { className: 'progress-bar', style: { marginTop: 12 } },
+                React.createElement('div', { className: `progress-fill ${over ? 'fill-red' : pct > 80 ? 'fill-gold' : 'fill-green'}`, style: { width: `${pct}%` } })
+              )
+            );
+          }),
+      modal === 'addLine' && isAdmin && React.createElement(LineModal, {
+        line: editTarget,
+        onClose: () => { setM(null); setEditTarget(null); },
+        onSave: data => { editTarget ? editLine({ ...editTarget, ...data }) : addLine(data); setM(null); setEditTarget(null); }
+      }),
+      modal === 'import' && isAdmin && React.createElement('div', { className: 'modal-overlay', onClick: e => e.target === e.currentTarget && setM(null) },
+        React.createElement('div', { className: 'modal' },
+          React.createElement('div', { className: 'modal-title' }, 'Import Budget Lines',
+            React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: () => setM(null) }, React.createElement('i', { className: 'ti ti-x' }))
+          ),
+          React.createElement('div', { className: 'info-box' },
+            React.createElement('i', { className: 'ti ti-info-circle' }),
+            'Paste tab-separated data: Code, Name, Amount (e.g. Y2526-03\tTeam Bonding\t200)'
+          ),
+          React.createElement('textarea', { value: importText, onChange: e => setImportText(e.target.value), placeholder: 'Y2526-03\tTeam Bonding\t200', style: { minHeight: 120 } }),
+          React.createElement('div', { className: 'form-actions' },
+            React.createElement('button', { className: 'btn', onClick: () => setM(null) }, 'Cancel'),
+            React.createElement('button', { className: 'btn btn-primary', onClick: () => { onImport(importText); setM(null); setImportText(''); } }, 'Import')
+          )
+        )
+      )
+    )
+  );
+}
+
+function LineModal({ line, onClose, onSave }) {
+  const [form, setForm] = useState({
+    code: line?.code || '', name: line?.name || '',
+    allocated: line?.allocated || '', description: line?.description || '',
+    isProfit: line?.isProfit || false,
+  });
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  function submit() {
+    if (!form.code || !form.name || !form.allocated) { showToast('Code, name and amount required'); return; }
+    onSave({ ...form, allocated: parseFloat(form.allocated) });
+  }
+
+  return React.createElement('div', { className: 'modal-overlay', onClick: e => e.target === e.currentTarget && onClose() },
+    React.createElement('div', { className: 'modal' },
+      React.createElement('div', { className: 'modal-title' },
+        line ? 'Edit Line' : 'Add Budget Line',
+        React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: onClose }, React.createElement('i', { className: 'ti ti-x' }))
+      ),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Budget Code'), React.createElement('input', { value: form.code, onChange: set('code'), placeholder: 'e.g. Y2526-03' })),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Line Name'), React.createElement('input', { value: form.name, onChange: set('name'), placeholder: 'e.g. Team Bonding' })),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Allocated Amount ($)'), React.createElement('input', { type: 'number', value: form.allocated, onChange: set('allocated'), placeholder: '0.00' })),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Description (optional)'), React.createElement('textarea', { value: form.description, onChange: set('description'), placeholder: 'What is this line for?' })),
+      React.createElement('div', { className: 'form-group', style: { display: 'flex', alignItems: 'center', gap: 10 } },
+        React.createElement('input', { type: 'checkbox', id: 'isProfit', checked: form.isProfit, onChange: e => setForm(f => ({ ...f, isProfit: e.target.checked })), style: { width: 'auto' } }),
+        React.createElement('label', { htmlFor: 'isProfit', style: { margin: 0, textTransform: 'none', letterSpacing: 'normal', fontSize: 13, color: 'var(--text2)' } }, 'This is a profit / revenue line')
+      ),
+      React.createElement('div', { className: 'form-actions' },
+        React.createElement('button', { className: 'btn', onClick: onClose }, 'Cancel'),
+        React.createElement('button', { className: 'btn btn-primary', onClick: submit }, line ? 'Save Changes' : 'Add Line')
+      )
+    )
+  );
+}
+
+// ── TRANSACTIONS ───────────────────────────────────────────────────────────────
+function TransactionsPage({ year, isAdmin, filter, setFilter, filteredTx, lineById, addTransaction, deleteTransaction, modal, setModal, totalLineSpent, onExport }) {
+  const lines = year?.lines || [];
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'topbar' },
+      React.createElement('div', { className: 'page-title' }, 'Transactions'),
+      isAdmin && React.createElement('div', { className: 'topbar-actions' },
+        React.createElement('button', { className: 'btn btn-primary', onClick: () => setModal('addTx') },
+          React.createElement('i', { className: 'ti ti-plus' }), 'Record Transaction'
+        ),
+        React.createElement('button', { className: 'btn btn-ghost', onClick: onExport },
+          React.createElement('i', { className: 'ti ti-upload' }), 'Export CSV'
+        ),
+      )
+    ),
+    React.createElement('div', { className: 'content' },
+      React.createElement('div', { className: 'filter-bar' },
+        React.createElement('select', { value: filter.line, onChange: e => setFilter(f => ({ ...f, line: e.target.value })) },
+          React.createElement('option', { value: 'all' }, 'All Lines'),
+          lines.map(l => React.createElement('option', { key: l.id, value: String(l.id) }, l.code + ' - ' + l.name))
+        ),
+        React.createElement('input', { type: 'text', placeholder: 'Search by name, description...', value: filter.search, onChange: e => setFilter(f => ({ ...f, search: e.target.value })) }),
+        (filter.line !== 'all' || filter.search) && React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: () => setFilter({ line: 'all', search: '' }) },
+          React.createElement('i', { className: 'ti ti-x' }), 'Clear'
+        ),
+      ),
+      filteredTx.length === 0
+        ? React.createElement('div', { className: 'empty' }, React.createElement('i', { className: 'ti ti-receipt-off' }), React.createElement('p', null, 'No transactions match your filter'))
+        : React.createElement('div', { className: 'card', style: { padding: 0, overflow: 'hidden' } },
+            React.createElement('div', { className: 'table-wrap' },
+              React.createElement('table', null,
+                React.createElement('thead', null, React.createElement('tr', null,
+                  React.createElement('th', null, 'Date'),
+                  React.createElement('th', null, 'Code'),
+                  React.createElement('th', null, 'Line'),
+                  React.createElement('th', null, 'Person'),
+                  React.createElement('th', null, 'Description'),
+                  React.createElement('th', { style: { textAlign: 'right' } }, 'Amount'),
+                  React.createElement('th', null, 'Type'),
+                  isAdmin && React.createElement('th', null, ''),
+                )),
+                React.createElement('tbody', null,
+                  filteredTx.map(t => {
+                    const line = lineById(t.lineId);
+                    return React.createElement('tr', { key: t.id, className: t.fromProfit ? 'profit-draw-row' : '' },
+                      React.createElement('td', { className: 'mono' }, t.date),
+                      React.createElement('td', { className: 'mono', style: { fontSize: 11, color: 'var(--text3)' } }, line?.code || '—'),
+                      React.createElement('td', null, line?.name || '—'),
+                      React.createElement('td', null, t.name),
+                      React.createElement('td', { style: { color: 'var(--text2)', maxWidth: 200 } }, t.description),
+                      React.createElement('td', { style: { textAlign: 'right' } },
+                        React.createElement('span', { className: 'mono', style: { color: t.fromProfit ? 'var(--gold2)' : 'var(--text)' } }, fmt(t.amount))
+                      ),
+                      React.createElement('td', null,
+                        t.fromProfit
+                          ? React.createElement('span', { className: 'badge badge-gold' }, 'Profit Draw')
+                          : React.createElement('span', { className: 'badge badge-blue' }, 'ECA Spend')
+                      ),
+                      isAdmin && React.createElement('td', null,
+                        React.createElement('button', { className: 'btn btn-danger btn-sm', onClick: () => { if (confirm('Remove this transaction?')) deleteTransaction(t.id); } },
+                          React.createElement('i', { className: 'ti ti-trash' })
+                        )
+                      ),
+                    );
+                  })
+                )
+              )
+            )
+          ),
+      modal === 'addTx' && isAdmin && React.createElement(TxModal, { lines, onClose: () => setModal(null), onSave: data => { addTransaction(data); setModal(null); }, totalLineSpent })
+    )
+  );
+}
+
+function TxModal({ lines, onClose, onSave, totalLineSpent }) {
+  const today = new Date().toISOString().split('T')[0];
+  const [form, setForm] = useState({ lineId: '', amount: '', name: '', date: today, description: '' });
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const selectedLine = lines.find(l => String(l.id) === String(form.lineId));
+  const spent = selectedLine ? totalLineSpent(selectedLine.id) : 0;
+  const remaining = selectedLine ? Number(selectedLine.allocated || 0) - spent : 0;
+  const wouldOverBy = form.amount && remaining < Number(form.amount) ? Number(form.amount) - remaining : 0;
+
+  function submit() {
+    if (!form.lineId || !form.amount || !form.name || !form.date || !form.description) { showToast('All fields required'); return; }
+    onSave({ ...form, amount: parseFloat(form.amount) });
+  }
+
+  return React.createElement('div', { className: 'modal-overlay', onClick: e => e.target === e.currentTarget && onClose() },
+    React.createElement('div', { className: 'modal' },
+      React.createElement('div', { className: 'modal-title' }, 'Record Transaction',
+        React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: onClose }, React.createElement('i', { className: 'ti ti-x' }))
+      ),
+      React.createElement('div', { className: 'form-group' },
+        React.createElement('label', null, 'Budget Line'),
+        React.createElement('select', { value: form.lineId, onChange: set('lineId') },
+          React.createElement('option', { value: '' }, 'Select a line...'),
+          lines.filter(l => !l.isProfit).map(l =>
+            React.createElement('option', { key: l.id, value: String(l.id) },
+              l.code + ' - ' + l.name + ' (' + fmt(Number(l.allocated || 0) - totalLineSpent(l.id)) + ' left)'
+            )
+          )
+        )
+      ),
+      selectedLine && React.createElement('div', { style: { fontSize: 12, color: 'var(--text2)', marginTop: -8, marginBottom: 12 } },
+        `${fmt(remaining)} remaining on this line`
+      ),
+      React.createElement('div', { className: 'form-row' },
+        React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Amount ($)'), React.createElement('input', { type: 'number', value: form.amount, onChange: set('amount'), placeholder: '0.00' })),
+        React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Date'), React.createElement('input', { type: 'date', value: form.date, onChange: set('date') })),
+      ),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Person Name'), React.createElement('input', { value: form.name, onChange: set('name'), placeholder: 'Who made this purchase?' })),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'What Was Purchased'), React.createElement('textarea', { value: form.description, onChange: set('description'), placeholder: 'Brief description...' })),
+      wouldOverBy > 0 && React.createElement('div', { className: 'warning-box' },
+        React.createElement('i', { className: 'ti ti-alert-triangle' }),
+        `This exceeds the line by ${fmt(wouldOverBy)}. The overage will be drawn from the profit pool.`
+      ),
+      React.createElement('div', { className: 'form-actions' },
+        React.createElement('button', { className: 'btn', onClick: onClose }, 'Cancel'),
+        React.createElement('button', { className: 'btn btn-primary', onClick: submit }, 'Record Transaction')
+      )
+    )
+  );
+}
+
+// ── FUNDS ──────────────────────────────────────────────────────────────────────
+function FundsPage({ year, isAdmin, addFund, updateFund, deleteFund, addLine, modal, setModal }) {
+  const [editTarget, setEditTarget] = useState(null);
+  const funds = year?.funds || [];
+  const statusColor = s => ({ pending: 'badge-gray', approved: 'badge-green', denied: 'badge-red' })[s] || 'badge-gray';
+
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'topbar' },
+      React.createElement('div', { className: 'page-title' }, 'Fund Applications'),
+      isAdmin && React.createElement('button', { className: 'btn btn-primary', onClick: () => { setEditTarget(null); setModal('addFund'); } },
+        React.createElement('i', { className: 'ti ti-plus' }), 'Add Application'
+      )
+    ),
+    React.createElement('div', { className: 'content' },
+      funds.length === 0
+        ? React.createElement('div', { className: 'empty' },
+            React.createElement('i', { className: 'ti ti-file-dollar' }),
+            React.createElement('p', null, isAdmin ? 'No fund applications yet. Track external funding here.' : 'No fund applications on record.')
+          )
+        : funds.map(f => React.createElement('div', { key: f.id, className: 'line-card' },
+            React.createElement('div', { className: 'line-header' },
+              React.createElement('div', null,
+                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 } },
+                  React.createElement('div', { className: 'line-name' }, f.name),
+                  React.createElement('span', { className: `badge ${statusColor(f.status)}` }, f.status),
+                ),
+                f.notes && React.createElement('div', { style: { fontSize: 12, color: 'var(--text2)', marginBottom: 6 } }, f.notes),
+                React.createElement('div', { className: 'line-amounts' },
+                  React.createElement('span', null, React.createElement('span', { style: { fontSize: 11, color: 'var(--text3)' } }, 'Requested'), React.createElement('strong', null, fmt(f.requested))),
+                  f.received != null && React.createElement('span', null, React.createElement('span', { style: { fontSize: 11, color: 'var(--text3)' } }, 'Received'), React.createElement('strong', { style: { color: 'var(--green)' } }, fmt(f.received))),
+                )
+              ),
+              isAdmin && React.createElement('div', { className: 'line-actions' },
+                React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: () => { setEditTarget(f); setModal('addFund'); } }, React.createElement('i', { className: 'ti ti-edit' })),
+                React.createElement('button', { className: 'btn btn-danger btn-sm', onClick: () => { if (confirm('Remove this fund application?')) deleteFund(f.id); } }, React.createElement('i', { className: 'ti ti-trash' })),
+              )
+            ),
+            isAdmin && React.createElement('div', { style: { display: 'flex', gap: 8, marginTop: 10 } },
+              ['pending', 'approved', 'denied'].map(s =>
+                React.createElement('button', { key: s, className: `btn btn-sm ${f.status === s ? 'btn-primary' : 'btn-ghost'}`, onClick: () => updateFund(f.id, { status: s }) },
+                  s.charAt(0).toUpperCase() + s.slice(1)
+                )
+              )
+            )
+          )),
+      modal === 'addFund' && isAdmin && React.createElement(FundModal, {
+        fund: editTarget,
+        lines: year?.lines,
+        onClose: () => { setModal(null); setEditTarget(null); },
+        onSave: data => { editTarget ? updateFund(editTarget.id, data) : addFund(data); setModal(null); setEditTarget(null); },
+        onCreateLine: addLine,
+      })
+    )
+  );
+}
+
+function FundModal({ fund, onClose, onSave, lines, onCreateLine }) {
+  const [form, setForm] = useState({
+    name: fund?.name || '', requested: fund?.requested || '',
+    received: fund?.received || '', notes: fund?.notes || '',
+    allocateTo: fund?.allocateTo || 'profit',
+  });
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  function submit() {
+    if (!form.name || !form.requested) { showToast('Name and requested amount required'); return; }
+    if (form.allocateTo === 'new-line' && form.received) {
+      onCreateLine({
+        code: `NEW-${String((lines?.filter(l => !l.isProfit).length || 0) + 1).padStart(2, '0')}`,
+        name: form.name,
+        allocated: parseFloat(form.received),
+        description: `Fund: ${form.name}`,
+        isProfit: false,
+      });
+    }
+    onSave({ ...form, requested: parseFloat(form.requested), received: form.received ? parseFloat(form.received) : null });
+  }
+
+  return React.createElement('div', { className: 'modal-overlay', onClick: e => e.target === e.currentTarget && onClose() },
+    React.createElement('div', { className: 'modal' },
+      React.createElement('div', { className: 'modal-title' },
+        fund ? 'Edit Application' : 'New Fund Application',
+        React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: onClose }, React.createElement('i', { className: 'ti ti-x' }))
+      ),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Fund / Sponsor Name'), React.createElement('input', { value: form.name, onChange: set('name'), placeholder: 'e.g. SHAD Sponsorship 2025' })),
+      React.createElement('div', { className: 'form-row' },
+        React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Amount Requested ($)'), React.createElement('input', { type: 'number', value: form.requested, onChange: set('requested'), placeholder: '0.00' })),
+        React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Amount Received ($)'), React.createElement('input', { type: 'number', value: form.received, onChange: set('received'), placeholder: 'Leave blank if pending' })),
+      ),
+      form.received && React.createElement('div', { className: 'form-group' },
+        React.createElement('label', null, 'Where should this money go?'),
+        React.createElement('select', { value: form.allocateTo, onChange: set('allocateTo') },
+          React.createElement('option', { value: 'profit' }, 'Add to Profit Pool'),
+          React.createElement('option', { value: 'new-line' }, 'Create new budget line'),
+        )
+      ),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Notes'), React.createElement('textarea', { value: form.notes, onChange: set('notes'), placeholder: 'Application notes, contact, deadlines...' })),
+      React.createElement('div', { className: 'form-actions' },
+        React.createElement('button', { className: 'btn', onClick: onClose }, 'Cancel'),
+        React.createElement('button', { className: 'btn btn-primary', onClick: submit }, fund ? 'Save Changes' : 'Add Application')
+      )
+    )
+  );
+}
+
+// ── ARCHIVE ────────────────────────────────────────────────────────────────────
+function ArchivePage({ store, setActiveYear, archiveYear, setArchiveYear }) {
+  const allYears = store.years;
+  const active = store.activeYearId;
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'topbar' }, React.createElement('div', { className: 'page-title' }, 'Past Years')),
+    React.createElement('div', { className: 'content' },
+      React.createElement('div', { className: 'info-box' },
+        React.createElement('i', { className: 'ti ti-lock' }),
+        `Past years are read-only archives. ${allYears.filter(y => y.locked).length} archived year(s).`
+      ),
+      allYears.length === 0 && React.createElement('div', { className: 'empty' }, React.createElement('i', { className: 'ti ti-archive' }), React.createElement('p', null, 'No past years yet.')),
+      allYears.map(y => React.createElement('div', { key: y.id, className: 'archive-item', onClick: () => setArchiveYear(archiveYear?.id === y.id ? null : y) },
+        React.createElement('div', null,
+          React.createElement('div', { style: { fontWeight: 500 } }, y.label),
+          React.createElement('div', { style: { fontSize: 12, color: 'var(--text3)', marginTop: 3 } },
+            `${y.lines?.length || 0} lines · ${y.transactions?.length || 0} transactions · ${y.funds?.length || 0} fund apps`
+          )
+        ),
+        React.createElement('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
+          y.locked && React.createElement('span', { className: 'badge badge-gray' }, React.createElement('i', { className: 'ti ti-lock', style: { fontSize: 11 } }), ' Archived'),
+          y.id === active && React.createElement('span', { className: 'badge badge-green' }, 'Active'),
+          !y.locked && y.id !== active && React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: e => { e.stopPropagation(); setActiveYear(y.id); } }, 'Switch to'),
+          React.createElement('i', { className: `ti ti-chevron-${archiveYear?.id === y.id ? 'up' : 'down'}`, style: { color: 'var(--text3)' } }),
+        )
+      )),
+      allYears.map(y => archiveYear?.id === y.id && React.createElement('div', { key: y.id + '-detail', style: { background: 'var(--bg3)', borderTop: '0.5px solid var(--border)', padding: '16px 18px', borderRadius: '0 0 14px 14px', marginTop: -10, marginBottom: 10 } },
+        React.createElement('div', { style: { fontSize: 12, color: 'var(--text3)', marginBottom: 10 } }, `${y.lines?.length || 0} budget lines`),
+        y.transactions?.length > 0 && React.createElement('div', { className: 'table-wrap' },
+          React.createElement('table', null,
+            React.createElement('thead', null, React.createElement('tr', null,
+              React.createElement('th', null, 'Date'),
+              React.createElement('th', null, 'Code'),
+              React.createElement('th', null, 'Line'),
+              React.createElement('th', null, 'Person'),
+              React.createElement('th', null, 'Description'),
+              React.createElement('th', { style: { textAlign: 'right' } }, 'Amount'),
+            )),
+            React.createElement('tbody', null,
+              y.transactions.slice(0, 20).map(t => {
+                const line = y.lines.find(l => String(l.id) === String(t.lineId));
+                return React.createElement('tr', { key: t.id, className: t.fromProfit ? 'profit-draw-row' : '' },
+                  React.createElement('td', { className: 'mono' }, t.date),
+                  React.createElement('td', { className: 'mono', style: { fontSize: 11, color: 'var(--text3)' } }, line?.code || '—'),
+                  React.createElement('td', null, line?.name || '—'),
+                  React.createElement('td', null, t.name),
+                  React.createElement('td', { style: { color: 'var(--text2)' } }, t.description),
+                  React.createElement('td', { style: { textAlign: 'right', color: t.fromProfit ? 'var(--gold2)' : 'var(--text)' }, className: 'mono' }, fmt(t.amount)),
+                );
+              })
+            )
+          )
+        )
+      ))
+    )
+  );
+}
+
+// ── NEW YEAR MODAL ─────────────────────────────────────────────────────────────
+function NewYearModal({ onClose, onStart }) {
+  const [label, setLabel] = useState('2026 – 2027');
+  return React.createElement('div', { className: 'modal-overlay', onClick: e => e.target === e.currentTarget && onClose() },
+    React.createElement('div', { className: 'modal' },
+      React.createElement('div', { className: 'modal-title' }, 'Start New Executive Year',
+        React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: onClose }, React.createElement('i', { className: 'ti ti-x' }))
+      ),
+      React.createElement('div', { className: 'info-box' },
+        React.createElement('i', { className: 'ti ti-archive' }),
+        "The current year will be saved as a read-only archive. You'll start fresh with a blank slate."
+      ),
+      React.createElement('div', { className: 'form-group' },
+        React.createElement('label', null, 'Year Label'),
+        React.createElement('input', { value: label, onChange: e => setLabel(e.target.value), placeholder: 'e.g. 2026 – 2027' })
+      ),
+      React.createElement('div', { className: 'form-actions' },
+        React.createElement('button', { className: 'btn', onClick: onClose }, 'Cancel'),
+        React.createElement('button', { className: 'btn btn-gold', onClick: () => { if (!label) { showToast('Enter a label'); return; } onStart(label); onClose(); } },
+          React.createElement('i', { className: 'ti ti-calendar-plus' }), 'Archive & Start New Year'
+        )
+      )
+    )
+  );
+}
+
+// ── MOUNT ──────────────────────────────────────────────────────────────────────
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(React.createElement(App));
 </script>
-
 </body>
 </html>
