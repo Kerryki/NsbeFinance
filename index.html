@@ -457,7 +457,7 @@ function App() {
       received: data.received ? parseFloat(data.received) : null,
       notes: data.notes || '',
       allocateTo: data.allocateTo || 'profit',
-      status: 'pending',
+      status: data.status || 'pending',
     };
     const { error } = await db.from('funds').insert(fund);
     if (error) { showToast('Error saving fund'); return; }
@@ -1057,12 +1057,20 @@ function FundModal({ fund, onClose, onSave, lines, onCreateLine }) {
     name: fund?.name || '', requested: fund?.requested || '',
     received: fund?.received || '', notes: fund?.notes || '',
     allocateTo: fund?.allocateTo || 'profit',
+    status: fund?.status || 'pending',
   });
-  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+  const set = k => e => {
+    const val = e.target.value;
+    setForm(f => {
+      const next = { ...f, [k]: val };
+      if (k === 'status' && val !== 'approved') return { ...next, received: '', allocateTo: 'profit' };
+      return next;
+    });
+  };
 
   function submit() {
-    if (!form.name || !form.requested) { showToast('Name and requested amount required'); return; }
-    if (form.allocateTo === 'new-line' && form.received) {
+    if (!form.name || !form.requested) { showToast('Company name and requested amount required'); return; }
+    if (!fund && form.status === 'approved' && form.allocateTo === 'new-line' && form.received) {
       onCreateLine({
         code: `NEW-${String((lines?.filter(l => !l.isProfit).length || 0) + 1).padStart(2, '0')}`,
         name: form.name,
@@ -1080,19 +1088,27 @@ function FundModal({ fund, onClose, onSave, lines, onCreateLine }) {
         fund ? 'Edit Application' : 'New Fund Application',
         React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: onClose }, React.createElement('i', { className: 'ti ti-x' }))
       ),
-      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Fund / Sponsor Name'), React.createElement('input', { value: form.name, onChange: set('name'), placeholder: 'e.g. SHAD Sponsorship 2025' })),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Company / Source'), React.createElement('input', { value: form.name, onChange: set('name'), placeholder: "e.g. Dean's Office, SHAD Canada" })),
       React.createElement('div', { className: 'form-row' },
         React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Amount Requested ($)'), React.createElement('input', { type: 'number', value: form.requested, onChange: set('requested'), placeholder: '0.00' })),
-        React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Amount Received ($)'), React.createElement('input', { type: 'number', value: form.received, onChange: set('received'), placeholder: 'Leave blank if pending' })),
+        React.createElement('div', { className: 'form-group' },
+          React.createElement('label', null, 'Status'),
+          React.createElement('select', { value: form.status, onChange: set('status') },
+            React.createElement('option', { value: 'pending' }, 'Pending'),
+            React.createElement('option', { value: 'approved' }, 'Approved'),
+            React.createElement('option', { value: 'denied' }, 'Denied'),
+          )
+        ),
       ),
-      form.received && React.createElement('div', { className: 'form-group' },
+      form.status === 'approved' && React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Amount Received ($)'), React.createElement('input', { type: 'number', value: form.received, onChange: set('received'), placeholder: '0.00' })),
+      form.status === 'approved' && form.received && React.createElement('div', { className: 'form-group' },
         React.createElement('label', null, 'Where should this money go?'),
         React.createElement('select', { value: form.allocateTo, onChange: set('allocateTo') },
           React.createElement('option', { value: 'profit' }, 'Add to Profit Pool'),
           React.createElement('option', { value: 'new-line' }, 'Create new budget line'),
         )
       ),
-      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Notes'), React.createElement('textarea', { value: form.notes, onChange: set('notes'), placeholder: 'Application notes, contact, deadlines...' })),
+      React.createElement('div', { className: 'form-group' }, React.createElement('label', null, 'Notes'), React.createElement('textarea', { value: form.notes, onChange: set('notes'), placeholder: 'Application notes, contact person, deadlines...' })),
       React.createElement('div', { className: 'form-actions' },
         React.createElement('button', { className: 'btn', onClick: onClose }, 'Cancel'),
         React.createElement('button', { className: 'btn btn-primary', onClick: submit }, fund ? 'Save Changes' : 'Add Application')
@@ -1103,8 +1119,15 @@ function FundModal({ fund, onClose, onSave, lines, onCreateLine }) {
 
 // ── ARCHIVE ────────────────────────────────────────────────────────────────────
 function ArchivePage({ store, setActiveYear, archiveYear, setArchiveYear }) {
+  const [expandedLine, setExpandedLine] = useState(null);
   const allYears = store.years;
   const active = store.activeYearId;
+
+  function toggleYear(y) {
+    setArchiveYear(archiveYear?.id === y.id ? null : y);
+    setExpandedLine(null);
+  }
+
   return React.createElement('div', null,
     React.createElement('div', { className: 'topbar' }, React.createElement('div', { className: 'page-title' }, 'Past Years')),
     React.createElement('div', { className: 'content' },
@@ -1112,47 +1135,135 @@ function ArchivePage({ store, setActiveYear, archiveYear, setArchiveYear }) {
         React.createElement('i', { className: 'ti ti-lock' }),
         `Past years are read-only archives. ${allYears.filter(y => y.locked).length} archived year(s).`
       ),
-      allYears.length === 0 && React.createElement('div', { className: 'empty' }, React.createElement('i', { className: 'ti ti-archive' }), React.createElement('p', null, 'No past years yet.')),
-      allYears.map(y => React.createElement('div', { key: y.id, className: 'archive-item', onClick: () => setArchiveYear(archiveYear?.id === y.id ? null : y) },
-        React.createElement('div', null,
-          React.createElement('div', { style: { fontWeight: 500 } }, y.label),
-          React.createElement('div', { style: { fontSize: 12, color: 'var(--text3)', marginTop: 3 } },
-            `${y.lines?.length || 0} lines · ${y.transactions?.length || 0} transactions · ${y.funds?.length || 0} fund apps`
+      allYears.length === 0 && React.createElement('div', { className: 'empty' },
+        React.createElement('i', { className: 'ti ti-archive' }),
+        React.createElement('p', null, 'No past years yet.')
+      ),
+      allYears.map(y => React.createElement(React.Fragment, { key: y.id },
+        React.createElement('div', { className: 'archive-item', onClick: () => toggleYear(y) },
+          React.createElement('div', null,
+            React.createElement('div', { style: { fontWeight: 500 } }, y.label),
+            React.createElement('div', { style: { fontSize: 12, color: 'var(--text3)', marginTop: 3 } },
+              `${y.lines?.length || 0} lines · ${y.transactions?.length || 0} transactions · ${y.funds?.length || 0} fund apps`
+            )
+          ),
+          React.createElement('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
+            y.locked && React.createElement('span', { className: 'badge badge-gray' },
+              React.createElement('i', { className: 'ti ti-lock', style: { fontSize: 11 } }), ' Archived'
+            ),
+            y.id === active && React.createElement('span', { className: 'badge badge-green' }, 'Active'),
+            !y.locked && y.id !== active && React.createElement('button', {
+              className: 'btn btn-ghost btn-sm',
+              onClick: e => { e.stopPropagation(); setActiveYear(y.id); }
+            }, 'Switch to'),
+            React.createElement('i', { className: `ti ti-chevron-${archiveYear?.id === y.id ? 'up' : 'down'}`, style: { color: 'var(--text3)' } }),
           )
         ),
-        React.createElement('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
-          y.locked && React.createElement('span', { className: 'badge badge-gray' }, React.createElement('i', { className: 'ti ti-lock', style: { fontSize: 11 } }), ' Archived'),
-          y.id === active && React.createElement('span', { className: 'badge badge-green' }, 'Active'),
-          !y.locked && y.id !== active && React.createElement('button', { className: 'btn btn-ghost btn-sm', onClick: e => { e.stopPropagation(); setActiveYear(y.id); } }, 'Switch to'),
-          React.createElement('i', { className: `ti ti-chevron-${archiveYear?.id === y.id ? 'up' : 'down'}`, style: { color: 'var(--text3)' } }),
-        )
-      )),
-      allYears.map(y => archiveYear?.id === y.id && React.createElement('div', { key: y.id + '-detail', style: { background: 'var(--bg3)', borderTop: '0.5px solid var(--border)', padding: '16px 18px', borderRadius: '0 0 14px 14px', marginTop: -10, marginBottom: 10 } },
-        React.createElement('div', { style: { fontSize: 12, color: 'var(--text3)', marginBottom: 10 } }, `${y.lines?.length || 0} budget lines`),
-        y.transactions?.length > 0 && React.createElement('div', { className: 'table-wrap' },
-          React.createElement('table', null,
-            React.createElement('thead', null, React.createElement('tr', null,
-              React.createElement('th', null, 'Date'),
-              React.createElement('th', null, 'Code'),
-              React.createElement('th', null, 'Line'),
-              React.createElement('th', null, 'Person'),
-              React.createElement('th', null, 'Description'),
-              React.createElement('th', { style: { textAlign: 'right' } }, 'Amount'),
-            )),
-            React.createElement('tbody', null,
-              y.transactions.slice(0, 20).map(t => {
-                const line = y.lines.find(l => String(l.id) === String(t.lineId));
-                return React.createElement('tr', { key: t.id, className: t.fromProfit ? 'profit-draw-row' : '' },
-                  React.createElement('td', { className: 'mono' }, t.date),
-                  React.createElement('td', { className: 'mono', style: { fontSize: 11, color: 'var(--text3)' } }, line?.code || '—'),
-                  React.createElement('td', null, line?.name || '—'),
-                  React.createElement('td', null, t.name),
-                  React.createElement('td', { style: { color: 'var(--text2)' } }, t.description),
-                  React.createElement('td', { style: { textAlign: 'right', color: t.fromProfit ? 'var(--gold2)' : 'var(--text)' }, className: 'mono' }, fmt(t.amount)),
+        archiveYear?.id === y.id && React.createElement('div', {
+          style: { background: 'var(--bg3)', borderTop: '0.5px solid var(--border)', padding: '16px 18px', borderRadius: '0 0 14px 14px', marginTop: -10, marginBottom: 10 }
+        },
+          (!y.lines || y.lines.length === 0)
+            ? React.createElement('div', { className: 'empty', style: { padding: '24px 0' } },
+                React.createElement('p', null, 'No budget lines recorded.')
+              )
+            : y.lines.map(line => {
+                let allocated, lineSpent, remaining, lineTxs;
+                if (line.isProfit) {
+                  const base = Number(line.allocated || 0);
+                  const fundIncome = (y.funds || [])
+                    .filter(f => f.status === 'approved' && f.allocateTo === 'profit')
+                    .reduce((s, f) => s + Number(f.received || 0), 0);
+                  const draws = (y.transactions || [])
+                    .filter(t => t.fromProfit)
+                    .reduce((s, t) => s + Number(t.amount || 0), 0);
+                  allocated = base + fundIncome;
+                  lineSpent = draws;
+                  remaining = allocated - draws;
+                  lineTxs = (y.transactions || [])
+                    .filter(t => t.fromProfit)
+                    .slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+                } else {
+                  lineSpent = (y.transactions || [])
+                    .filter(t => String(t.lineId) === String(line.id) && !t.fromProfit)
+                    .reduce((s, t) => s + Number(t.amount || 0), 0);
+                  allocated = Number(line.allocated || 0);
+                  remaining = allocated - lineSpent;
+                  lineTxs = (y.transactions || [])
+                    .filter(t => String(t.lineId) === String(line.id))
+                    .slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+                }
+                const pct = allocated > 0 ? Math.min(100, (lineSpent / allocated) * 100) : 0;
+                const over = lineSpent > allocated;
+                const isExpanded = expandedLine === line.id;
+
+                return React.createElement(React.Fragment, { key: line.id },
+                  React.createElement('div', {
+                    className: 'line-card',
+                    style: { cursor: 'pointer', marginBottom: isExpanded ? 0 : 12 },
+                    onClick: () => setExpandedLine(isExpanded ? null : line.id),
+                  },
+                    React.createElement('div', { className: 'line-header' },
+                      React.createElement('div', null,
+                        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 } },
+                          React.createElement('div', { className: 'line-code' }, line.code),
+                          React.createElement('div', { className: 'line-name' }, line.name),
+                          line.isProfit && React.createElement('span', { className: 'badge badge-green' }, 'Profit'),
+                        )
+                      ),
+                      React.createElement('i', { className: `ti ti-chevron-${isExpanded ? 'up' : 'down'}`, style: { color: 'var(--text3)', fontSize: 14 } })
+                    ),
+                    React.createElement('div', { className: 'line-amounts' },
+                      React.createElement('span', null,
+                        React.createElement('span', { style: { fontSize: 11, color: 'var(--text3)' } }, line.isProfit ? 'Pool' : 'Allocated'),
+                        React.createElement('strong', null, fmt(allocated))
+                      ),
+                      React.createElement('span', null,
+                        React.createElement('span', { style: { fontSize: 11, color: 'var(--text3)' } }, line.isProfit ? 'Drawn' : 'Spent'),
+                        React.createElement('strong', { style: { color: over ? '#dc2626' : 'var(--text)' } }, fmt(lineSpent))
+                      ),
+                      React.createElement('span', null,
+                        React.createElement('span', { style: { fontSize: 11, color: 'var(--text3)' } }, line.isProfit ? 'Final' : 'Remaining'),
+                        React.createElement('strong', { style: { color: over ? '#dc2626' : remaining > 0 ? 'var(--green)' : 'var(--text)' } }, fmt(remaining))
+                      ),
+                    ),
+                    React.createElement('div', { className: 'progress-bar', style: { marginTop: 12 } },
+                      React.createElement('div', { className: `progress-fill ${over ? 'fill-red' : pct > 80 ? 'fill-gold' : 'fill-green'}`, style: { width: `${pct}%` } })
+                    )
+                  ),
+                  isExpanded && React.createElement('div', {
+                    style: { background: 'var(--bg2)', border: '0.5px solid var(--border)', borderTop: 'none', borderRadius: '0 0 10px 10px', marginBottom: 12, overflow: 'hidden' }
+                  },
+                    lineTxs.length === 0
+                      ? React.createElement('div', { style: { padding: '16px', fontSize: 12, color: 'var(--text3)', textAlign: 'center' } }, 'No transactions for this line.')
+                      : React.createElement('div', { className: 'table-wrap' },
+                          React.createElement('table', null,
+                            React.createElement('thead', null, React.createElement('tr', null,
+                              React.createElement('th', null, 'Date'),
+                              React.createElement('th', null, 'Person'),
+                              React.createElement('th', null, 'Description'),
+                              React.createElement('th', { style: { textAlign: 'right' } }, 'Amount'),
+                              React.createElement('th', null, 'Type'),
+                            )),
+                            React.createElement('tbody', null,
+                              lineTxs.map(t =>
+                                React.createElement('tr', { key: t.id, className: t.fromProfit ? 'profit-draw-row' : '' },
+                                  React.createElement('td', { className: 'mono' }, t.date),
+                                  React.createElement('td', null, t.name),
+                                  React.createElement('td', { style: { color: 'var(--text2)' } }, t.description),
+                                  React.createElement('td', { style: { textAlign: 'right' }, className: 'mono' }, fmt(t.amount)),
+                                  React.createElement('td', null,
+                                    t.fromProfit
+                                      ? React.createElement('span', { className: 'badge badge-gold' }, 'Profit Draw')
+                                      : React.createElement('span', { className: 'badge badge-blue' }, 'Expense')
+                                  ),
+                                )
+                              )
+                            )
+                          )
+                        )
+                  )
                 );
               })
-            )
-          )
         )
       ))
     )
