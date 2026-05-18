@@ -1,16 +1,12 @@
-const GAS_URL = process.env.GAS_URL;
-const GAS_PASSWORD = process.env.GAS_PASSWORD;
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://nsbe-finance.vercel.app';
-
-if (!GAS_URL) throw new Error('GAS_URL env var is required');
-if (!GAS_PASSWORD) throw new Error('GAS_PASSWORD env var is required');
+const GAS_URL = process.env.GAS_URL || 'https://script.google.com/macros/s/AKfycbzi9ALKksiZ8XMVmlqyOrGFdZF-1-Mh4zrzQoERxnY34uyvIWf0xbytk5CfllaGUkncuw/exec';
+const GAS_PASSWORD = process.env.GAS_PASSWORD || 'nsbe2025';
 
 const MAX_BODY_BYTES = 65536;
 const TIMEOUT_MS = 15000;
 const ALLOWED_ACTIONS = ['create', 'update', 'delete'];
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
