@@ -59,6 +59,7 @@
 <div id="root"></div>
 <div id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -66,22 +67,37 @@
 <script type="text/babel">
 const { useState, useEffect, useMemo, useCallback } = React;
 
-const API_URL = '/api/proxy';
+const db = supabase.createClient(
+  'https://zptyctzxjnyaxjonbgbp.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwdHljdHp4am55YXhqb25iZ2JwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTExMDMsImV4cCI6MjA5NDYyNzEwM30.-6pCdPHqHKjJBG4x3rpG-b01WdsfBOF_3Vscml_K6gY'
+);
 
 const PAGE_TITLES = { dashboard: 'Dashboard', lines: 'Budget Lines', transactions: 'Transactions', funds: 'Funds' };
 
-async function apiGet() {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error('Failed to load data');
-  return res.json();
+async function dbGet() {
+  const [y, l, t, f] = await Promise.all([
+    db.from('years').select('*'),
+    db.from('lines').select('*'),
+    db.from('transactions').select('*'),
+    db.from('funds').select('*'),
+  ]);
+  if (y.error) throw new Error(y.error.message);
+  return { years: y.data, lines: l.data, transactions: t.data, funds: f.data };
 }
 
-async function apiPost(action, sheet, data, id) {
-  const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, sheet, data, id }) });
-  if (!res.ok) throw new Error('API error');
-  const result = await res.json();
-  if (result.error) throw new Error(result.error);
-  return result;
+async function dbCreate(table, data) {
+  const { error } = await db.from(table).insert(data);
+  if (error) throw new Error(error.message);
+}
+
+async function dbUpdate(table, id, data) {
+  const { error } = await db.from(table).update(data).eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+async function dbDelete(table, id) {
+  const { error } = await db.from(table).delete().eq('id', id);
+  if (error) throw new Error(error.message);
 }
 
 function fmt(n) { return '$' + parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
@@ -110,7 +126,7 @@ function App() {
   async function loadData() {
     try {
       setLoading(true);
-      const data = await apiGet();
+      const data = await dbGet();
       const lines = data.lines || [];
       const transactions = data.transactions || [];
       const funds = data.funds || [];
@@ -163,7 +179,7 @@ function App() {
             React.createElement('div', { className: 'stat-card' }, React.createElement('div', { style: { fontSize: 11, color: 'var(--text3)' } }, 'Remaining'), React.createElement('div', { className: 'stat-value' }, fmt(totalAllocated - totalSpent)))
           ),
           React.createElement('div', { className: 'card' },
-            React.createElement('p', null, 'Finance portal is connected to your Google Sheet.')
+            React.createElement('p', null, 'Finance portal is connected to Supabase.')
           )
         ),
         page === 'lines' && React.createElement('div', null, React.createElement('p', null, 'Budget Lines')),
