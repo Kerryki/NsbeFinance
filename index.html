@@ -6,10 +6,10 @@
 <title>NSBE Finance Portal</title>
 <link href="https://unpkg.com/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" rel="stylesheet"/>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap');
   :root { --bg: #ffffff; --bg2: #f9fafb; --bg3: #f3f4f6; --surface: #e5f3f0; --accent: #10b981; --accent2: #059669; --text: #111827; --text2: #4b5563; --text3: #6b7280; --radius: 10px; --font: 'DM Sans', system-ui, sans-serif; --font-mono: 'DM Mono', monospace; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; }
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap');
   .app { display: flex; min-height: 100vh; }
   .sidebar { width: 220px; background: var(--bg2); border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; }
   .main { flex: 1; overflow-y: auto; }
@@ -66,9 +66,9 @@
 <script type="text/babel">
 const { useState, useEffect, useMemo, useCallback } = React;
 
-// PASTE YOUR APPS SCRIPT URL HERE
 const API_URL = '/api/proxy';
-const PASSWORD = 'nsbe2025';
+
+const PAGE_TITLES = { dashboard: 'Dashboard', lines: 'Budget Lines', transactions: 'Transactions', funds: 'Funds' };
 
 async function apiGet() {
   const res = await fetch(API_URL);
@@ -77,7 +77,7 @@ async function apiGet() {
 }
 
 async function apiPost(action, sheet, data, id) {
-  const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, sheet, data, id, password: PASSWORD }) });
+  const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, sheet, data, id }) });
   if (!res.ok) throw new Error('API error');
   const result = await res.json();
   if (result.error) throw new Error(result.error);
@@ -98,6 +98,10 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState('dashboard');
   const [modal, setModal] = useState(null);
+
+  const activeYear = useMemo(() => store?.years?.find(y => y.id === store.activeYearId) ?? null, [store]);
+  const totalAllocated = useMemo(() => (activeYear?.lines || []).filter(l => !l.isProfit).reduce((s,l) => s + Number(l.allocated||0), 0), [activeYear]);
+  const totalSpent = useMemo(() => (activeYear?.transactions || []).filter(t => !t.fromProfit).reduce((s,t) => s + Number(t.amount||0), 0), [activeYear]);
 
   useEffect(() => {
     loadData();
@@ -133,11 +137,6 @@ function App() {
     return React.createElement('div', { className: 'loading' }, React.createElement('div', { className: 'spinner' }));
   }
 
-  const activeYear = store.years.find(y => y.id === store.activeYearId);
-
-  const totalAllocated = useMemo(() => (activeYear?.lines || []).filter(l => !l.isProfit).reduce((s,l) => s + Number(l.allocated||0), 0), [activeYear]);
-  const totalSpent = useMemo(() => (activeYear?.transactions || []).filter(t => !t.fromProfit).reduce((s,t) => s + Number(t.amount||0), 0), [activeYear]);
-
   return React.createElement('div', { className: 'app' },
     React.createElement('div', { className: 'sidebar' },
       React.createElement('div', { className: 'sidebar-header' },
@@ -153,7 +152,7 @@ function App() {
     ),
     React.createElement('div', { className: 'main' },
       React.createElement('div', { className: 'topbar' },
-        React.createElement('div', { className: 'page-title' }, page === 'dashboard' ? 'Dashboard' : page === 'lines' ? 'Budget Lines' : page === 'transactions' ? 'Transactions' : 'Funds')
+        React.createElement('div', { className: 'page-title' }, PAGE_TITLES[page])
       ),
       React.createElement('div', { className: 'content' },
         page === 'dashboard' && React.createElement('div', null,
