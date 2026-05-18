@@ -14,11 +14,9 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const signal = AbortSignal.timeout(TIMEOUT_MS);
-
   try {
     if (req.method === 'GET') {
-      const response = await fetch(GAS_URL, { signal });
+      const response = await fetch(GAS_URL);
       const data = await response.json();
       return res.status(200).json(data);
     }
@@ -54,7 +52,6 @@ module.exports = async function handler(req, res) {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: { 'Content-Type': 'text/plain' },
-        signal,
       });
       const result = await response.json();
       return res.status(200).json(result);
@@ -63,6 +60,6 @@ module.exports = async function handler(req, res) {
     res.status(405).json({ error: 'Method not allowed' });
   } catch (err) {
     console.error('Proxy error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err.message, stack: err.stack });
   }
 };
